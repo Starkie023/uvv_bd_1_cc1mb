@@ -1,0 +1,188 @@
+###QUESTÃO NÚMERO 01
+
+SELECT funcionario.numero_departamento, AVG(funcionario.salario) AS media_salarial
+    	FROM funcionario
+    	JOIN departamento
+    	ON departamento.numero_departamento = funcionario.numero_departamento
+    	GROUP BY funcionario.numero_departamento
+    	;
+
+/* Para fazer o relatorio dessa questão usei o comando AVG para calcular
+a média  do salario */
+
+###QUESTÃO NÚMERO 02
+
+SELECT funcionario.sexo, avg(funcionario.salario) AS media_salarial
+	FROM funcionario
+	GROUP BY funcionario.sexo
+	;
+
+/* Novamente o uso do AVG */
+
+###QUESTÃO NÚMERO 03
+
+SELECT nome_departamento, CONCAT(primeiro_nome, ' ', nome_meio, ' ', ultimo_nome) AS nome_completo, 
+Data_nascimento, TIMESTAMPDIFF(year, data_nascimento, now()) AS idade, funcionario.salario
+	FROM departamento, funcionario
+	WHERE departamento.numero_departamento = funcionario.numero_departamento
+	;
+
+/* Nessa questão só consegui calcular a idade de forma correta usando o comando
+TIMESTAMPDIFF, alem de usar o comando CONCAT para juntar os nomes e formar o nome completo */
+
+### QUESTÃO NÚMERO 04
+
+SELECT CONCAT(primeiro_nome, ' ', nome_meio, ' ', ultimo_nome) AS nome_completo,
+TIMESTAMPDIFF(year, data_nascimento, now()) AS idade, salario, 
+	CASE
+		WHEN salario < 35000 THEN salario * 1.2
+		ELSE salario * 1.15
+	END AS reajuste_salarial
+	FROM funcionario
+	;
+
+/* Novamente o uso de TIMESTAMPDIFF, mas agora usando o comando CASE para colocar uma
+condição no reajuste_salarial */
+
+###QUESTÃO NÚMERO 05
+
+SELECT nome_departamento, 
+	CASE
+		WHEN funcionario.cpf = departamento.cpf_gerente THEN 'gerente'
+		ELSE 'funcionario'
+	END AS cargo,
+CONCAT(primeiro_nome, ' ', nome_meio, ' ', ultimo_nome) AS nome_completo, salario
+	FROM departamento, funcionario
+	WHERE departamento.numero_departamento = funcionario.numero_departamento
+	ORDER BY nome_departamento, salario DESC
+	;
+
+/* Novamente o uso do CASE para trazer uma condição */
+
+###QUESTÃO NÚMERO 06
+
+SELECT 
+	CASE
+		WHEN funcionario.cpf = dependente.cpf_funcionario THEN 
+		CONCAT(primeiro_nome, ' ', nome_meio, ' ', ultimo_nome)
+	END AS nome_funcionario,
+funcionario.numero_departamento, departamento.nome_departamento, nome_dependente,
+TIMESTAMPDIFF(year, dependente.data_nascimento, now()) AS idade,
+	CASE
+		WHEN dependente.sexo = 'M' THEN 'Masculino'
+		ELSE 'Feminino'
+	END AS sexo
+	FROM funcionario, departamento, dependente
+	WHERE funcionario.cpf = dependente.cpf_funcionario AND
+	      funcionario.numero_departamento = departamento.numero_departamento
+	;
+
+/* Novamento o CASE, o CONCAT e o TIMESTAMPDIFF */
+
+###QUESTÃO NÚMERO 07
+
+SELECT CONCAT(primeiro_nome, ' ', nome_meio, ' ', ultimo_nome) AS nome_completo,
+departamento.nome_departamento, salario
+	FROM departamento, funcionario
+	LEFT JOIN dependente ON funcionario.cpf = dependente.cpf_funcionario
+	WHERE dependente.cpf_funcionario IS NULL
+	GROUP BY nome_completo
+	;
+
+/* Nessa eu usei uma LEFT JOIN para trazer as informações necessarias */
+
+###QUESTÃO NÚMERO 08
+
+SELECT nome_departamento, nome_projeto,
+CONCAT(primeiro_nome, ' ', nome_meio, ' ', ultimo_nome) AS nome_completo, horas
+	FROM departamento, projeto, funcionario, trabalha_em
+	WHERE departamento.numero_departamento = projeto.numero_departamento 
+    	AND funcionario.cpf = trabalha_em.cpf_funcionario 
+    	AND projeto.numero_projeto = trabalha_em.numero_projeto_trabalha_em
+	ORDER BY nome_departamento, nome_projeto
+	;
+
+/* Nada de diferente a ser adicionado a essa questão */
+
+###QUESTÃO NÚMERO 09
+
+SELECT departamento.nome_departamento, numero_projeto, nome_projeto, SUM(horas) AS Total_horas
+	FROM departamento, projeto, trabalha_em
+	WHERE projeto.numero_projeto = trabalha_em.numero_projeto_trabalha_em
+	AND departamento.numero_departamento = projeto.numero_departamento 
+	GROUP BY nome_projeto 
+	;
+
+/* Usei o comando SUM para fazer a soma das horas pedidas na tabela */
+
+###QUESTÃO NÚMERO 10
+
+SELECT funcionario.numero_departamento, AVG(funcionario.salario) AS media_salarial
+    	FROM funcionario
+    	JOIN departamento
+    	ON departamento.numero_departamento = funcionario.numero_departamento
+    	GROUP BY funcionario.numero_departamento
+    	;
+
+/* Novamente o comando AVG */
+
+###QUESTÃO NÚMERO 11
+
+SELECT CONCAT(primeiro_nome, ' ', nome_meio, ' ', ultimo_nome) AS nome_completo,
+projeto.nome_projeto, salario * 50 * horas AS salario_total
+	FROM funcionario, projeto, trabalha_em
+	WHERE funcionario.cpf = trabalha_em.cpf_funcionario 
+	AND projeto.numero_projeto = trabalha_em.numero_projeto_trabalha_em 
+	;
+
+/* Calculei o salario por hora em uma multiplicação simples dentro do SELECT */
+
+###QUESTÃO NÚMERO 12
+
+SELECT departamento.nome_departamento, projeto.nome_projeto, 
+CONCAT(primeiro_nome, ' ', nome_meio, ' ', ultimo_nome) AS nome_completo,
+trabalha_em.horas
+	FROM departamento, projeto, funcionario, trabalha_em
+	WHERE trabalha_em.horas = 0
+	GROUP BY trabalha_em.horas 
+	;
+
+/* Nada a comentar de diferente sobre essa questão */
+
+###QUESTÃO NÚMERO 13
+
+SELECT CONCAT(primeiro_nome, ' ', nome_meio, ' ', ultimo_nome) AS nome_completo,
+dependente.nome_dependente, TIMESTAMPDIFF(year, funcionario.data_nascimento, now()) AS idade, 
+TIMESTAMPDIFF(year, dependente.data_nascimento, now()) AS idade_dependente, 
+funcionario.sexo, dependente.sexo AS sexo_dependente 
+	FROM funcionario, dependente
+	WHERE funcionario.cpf = dependente.cpf_funcionario 
+	;
+
+/* Essa foi a forma que eu consegui achar de fazer as idades e sexos aparecerem */
+
+###QUESTÃO NÚMERO 14
+
+SELECT nome_departamento,
+	CASE 
+		WHEN funcionario.numero_departamento = departamento.numero_departamento 
+		THEN COUNT(departamento.numero_departamento)
+	END AS soma
+	FROM funcionario, departamento
+	WHERE departamento.numero_departamento = funcionario.numero_departamento 
+	GROUP BY nome_departamento 
+	;
+
+/* Nada a declarar de diferente sobre essa questão */
+
+###QUESTÃO NÚMERO 15
+
+SELECT CONCAT(primeiro_nome, ' ', nome_meio, ' ', ultimo_nome) AS nome_completo,
+departamento.nome_departamento, projeto.nome_projeto
+	FROM funcionario, departamento, projeto, trabalha_em
+	WHERE funcionario.cpf = trabalha_em.cpf_funcionario 
+	AND departamento.numero_departamento = funcionario.numero_departamento 
+	AND projeto.numero_projeto = trabalha_em.numero_projeto_trabalha_em 
+	;
+
+/* ESSA QUESTÃO FOI UM PESADELO */
